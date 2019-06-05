@@ -47,7 +47,7 @@ class BurgerBuilder extends Component{
             updatedIngredients[type] = updatedCount;
             const oldPrice=this.state.totalPrice;
             const removedPrice= INGREDIENT_PRICES[type];
-            const newPrice=oldPrice+removedPrice;
+            const newPrice=oldPrice-removedPrice;
             this.setState({totalPrice:newPrice, ingredients:updatedIngredients})
             this.updatePurchasable(updatedIngredients);
         }
