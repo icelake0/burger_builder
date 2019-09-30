@@ -26,7 +26,8 @@ class App extends Component {
         lng: 150.644
       },
       error: null,
-      success:null
+      success:null,
+      currentLocation : null
     }
   }  
   getUserData = () => {
@@ -85,25 +86,19 @@ class App extends Component {
   }
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({error: null, success: null});
     console.log('fired');
     let email = this.refs.email.value;
     let accessCode = this.refs.accessCode.value;
   
     if (email && accessCode ){
       let { locations } = this.state;
-      locations =  Object['values'](locations);
-      console.log(locations);
-      const locationIndex = locations.findIndex(data => {
-        return data.user_id === email && data.accessCode === accessCode
-      });
-      console.log('The found Index : ', locationIndex);
-      if(locationIndex+1){
+      let locationIndex = this.getLocationIndex(locations, email, accessCode)
+      if(locationIndex){
         let location = locations[locationIndex];
-        console.log('the location found : ', location);
         //at this point the location was matched, do the fallowing
-
-        //1 put the informatiin about the person being located on the screen
-
+        //1 start leastening to the location found cange
+        this.leastenToLocationChange(locationIndex);
         //2 show a success message that the person id found
         this.setState({success:`We found the person you are looking for : ${email}`});
         //3 clear the form submitted
@@ -121,6 +116,35 @@ class App extends Component {
       this.setState({error:'Your inputs are not valid'})
     }
   }
+
+  setCurrentLocationIndex = (index) => {
+    if(index){
+      this.setState({currentLocation : index})
+    }
+  }
+  getLocationIndex = (locations, email, accessCode) => {
+    let index = null;
+    try{
+      Object.keys(locations).forEach(key => {
+        let location = locations[key];
+        if(location.email === email && location.accessCode === accessCode){
+          index = key;
+          throw {message : 'found the location'};
+        }
+      })
+    }catch(e){}
+    return index;
+  }
+
+  leastenToLocationChange = (key)=>{
+    let ref = Firebase.database().ref(`/locations/${key}`);
+    ref.on('value', snapshot => {
+      const location = snapshot.val();
+      console.error(location);
+      this.setState({location : location});
+    });
+  }
+  
 }
 
 export default App;
