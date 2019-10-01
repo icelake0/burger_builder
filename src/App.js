@@ -31,7 +31,7 @@ class App extends Component {
     }
   }  
   getUserData = () => {
-    let ref = Firebase.database().ref('/locations');
+    let ref = Firebase.database().ref('/locations_v2');
     ref.on('value', snapshot => {
       const state = snapshot.val();
       this.setState({locations : state});
@@ -137,7 +137,7 @@ class App extends Component {
   }
 
   leastenToLocationChange = (key)=>{
-    let ref = Firebase.database().ref(`/locations/${key}`);
+    let ref = Firebase.database().ref(`/locations_v2/${key}`);
     ref.on('value', snapshot => {
       const location = snapshot.val();
       console.error(location);
